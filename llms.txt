@@ -1,0 +1,35 @@
+# Starter Template — Full-Stack Web App
+
+> Template ต้นแบบสำหรับสร้างเว็บแอปใหม่ ออกแบบให้ LLM/agent หยิบไปดัดแปลงเป็นโปรเจกต์อื่นได้เร็ว
+> Stack: Hono + Cloudflare Workers + D1 (SQLite) + KV | Vue 3 + Vuetify + Pinia | Deploy: Cloudflare Workers + Pages (ฟรี)
+> สถาปัตยกรรม backend เป็น Clean Architecture (domain → service → handler → repository) มี `users` เป็น resource ตัวอย่างครบชุด
+
+## เอกสารหลัก (อ่านก่อน)
+- [README.md](README.md): setup, local dev, โครงสร้างเต็ม, วิธีเพิ่ม resource/หน้าใหม่, คำสั่งที่ใช้บ่อย
+- [deploy-plan.md](deploy-plan.md): playbook deploy ขึ้น Cloudflare แบบ step-by-step แยก 🤖 agent ทำได้ / 👤 user ต้องทำเอง
+
+## โครงสร้าง
+- `backend/` — Hono API (Cloudflare Workers). Clean Architecture: `src/domain` → `src/services` → `src/handlers` → `src/routers`, wire ที่ `src/di/container.ts`
+- `frontend/` — Vue 3 + Vuetify SPA. File-based routing ที่ `src/pages/`, state ที่ `src/stores/`, fetch ที่ `src/apis/`
+- `.github/workflows/deploy.yml` — CI/CD: push to `main` → typecheck → build → deploy backend + frontend
+
+## เอา template นี้ไปทำแอปใหม่
+1. เริ่ม repo ใหม่: download ZIP หรือ `git clone` แล้ว `rm -rf .git && git init` (ดู README หัวข้อ "เริ่มใช้ Template นี้")
+2. เปลี่ยนชื่อโปรเจกต์ (ค่า default: `starter-template`, `starter-backend`, `starter-db`):
+   - `backend/wrangler.example.jsonc` → `name`, `database_name`
+   - `backend/package.json` script `db:migrate:*` (ชื่อ db `starter-db`)
+   - `.github/workflows/deploy.yml` (อ้าง `starter-db`)
+   - `frontend/.env.example` → ชื่อแอป, SEO, theme
+3. เพิ่ม resource ฝั่ง backend (เช่น `bookings`): ทำตาม 9 ขั้นใน README หัวข้อ "เพิ่ม Resource ใหม่" — ใช้ไฟล์ `user` เป็น template
+4. เพิ่มหน้า/ฟีเจอร์ฝั่ง frontend: ทำตาม 5 ขั้นใน README หัวข้อ "เพิ่มหน้าใหม่" — ใช้ไฟล์ `user` เป็น template
+5. Deploy: ทำตาม [deploy-plan.md](deploy-plan.md)
+
+## กฎที่ต้องรักษาเวลาแก้ backend
+- ชั้นในไม่ import ชั้นนอก: `domain` ไม่รู้จัก Hono, `service` ไม่รู้จัก `D1Database` (รับผ่าน repository interface)
+- ทุก resource ต้อง wire เข้า `src/di/container.ts`, `src/routers/index.ts`, `src/server.ts`, `src/lambda.ts`
+- request validation + OpenAPI docs มาจาก Zod schema ใน `src/schemas/`
+
+## หมายเหตุ
+- `backend/wrangler.jsonc` (มี ID จริง) เป็นไฟล์ลับ — ห้าม commit; CI ใช้ `wrangler.example.jsonc` + inject ID จาก GitHub Secrets
+- ฟรีทั้งหมดบน Cloudflare free tier + GitHub Actions (public repo)
+</content>

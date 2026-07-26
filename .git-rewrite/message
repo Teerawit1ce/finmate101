@@ -1,0 +1,6 @@
+🚀 deploy: Cloudflare Workers + Pages
+
+- Backend: https://finmate-backend.teerawit-ice.workers.dev
+- Frontend: https://finmate-demo.pages.dev
+- D1: finmate-db, KV: finmate-cache
+- Demo standalone: harntao.html
